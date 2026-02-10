@@ -54,7 +54,18 @@ def smoothGaussEstimator(data_pts : npt.ArrayLike, divs : int = 100, bounds_fact
     tot_density = np.sum(ind_density, axis = 0)
     # Then, we make it relative to the whole area; giving us a probability density estimation (the area underneath is 1)
     relative_density = tot_density / np.sum(tot_density)
-    return eval_pts, relative_density
+    return eval_pts, relative_density, pt_dist_avg
 
-bimodal_test_data = np.concatenate((np.random.normal(loc = -3, scale = 0.7, size = 10), np.random.normal(loc = 5, scale = 1.15, size = 10)))
-test_gauss = smoothGaussEstimator(data_pts = bimodal_test_data)
+if(__name__ == "__main__"):
+    bimodal_test_data = np.concatenate((np.random.normal(loc = -3, scale = 0.7, size = 10), np.random.normal(loc = 5, scale = 1.15, size = 10)))
+    test_gauss = smoothGaussEstimator(data_pts = bimodal_test_data)
+    
+    # Plot the results
+    eval_pts, relative_density, std_dev = test_gauss
+    print("Standard deviation used: ", std_dev)
+    plt.plot(eval_pts, relative_density, label="Estimated Density")
+    plt.title("Kernel Density Estimation")
+    plt.xlabel("Data Points")
+    plt.ylabel("Density")
+    plt.legend()
+    plt.show()
