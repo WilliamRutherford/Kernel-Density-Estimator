@@ -29,8 +29,10 @@ def smoothGaussEstimator(data_pts : npt.ArrayLike, divs : int = 100, bounds_fact
     else:
         eval_pts = input_pts
 
-    # Correct calculation of average distance between consecutive points
-    pt_distances = np.abs(data_pts[1:] - data_pts[:-1])
+
+    # calculation of average distance between consecutive points
+    sorted_pts = np.sort(data_pts)
+    pt_distances = np.abs(sorted_pts[1:] - sorted_pts[:-1])
     pt_dist_avg = np.mean(pt_distances)
     # whatever that is, use it as as the standard deviation
 
