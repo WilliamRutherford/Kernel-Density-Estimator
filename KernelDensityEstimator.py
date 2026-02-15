@@ -26,15 +26,15 @@ evaluation_points, density_estimation
 evaluation_pts has shape (divs,) representing the points it was evaluated at
 density_estimation has shape (divs,) representing the relative probability density at each evaluated point
 '''
-def KernelDensityEstimator(data_pts : npt.ArrayLike, bandwidth : float = 1.0, divs : int = 100, bounds_factor : float = 0.25, bounds_abs = None, input_pts = None):
+def KernelDensityEstimator(data_pts : npt.ArrayLike, bandwidth : float = 1.0, divs : int = 100, bounds_factor : float = 0.25, bounds_abs = None, input_pts = None, timing: bool = False):
     pass
     fn = gaussian_fn(center = 0.0, std_dev = bandwidth)
-    result = GenericGaussEstimator(data_pts = data_pts, fn = fn, divs = divs, bounds_factor = bounds_factor, bounds_abs = bounds_abs, input_pts = input_pts)
+    result = GenericGaussEstimator(data_pts = data_pts, fn = fn, divs = divs, bounds_factor = bounds_factor, bounds_abs = bounds_abs, input_pts = input_pts, timing = timing)
     return result + (bandwidth,)
 
 if(__name__ == "__main__"):
     bimodal_test_data = np.concatenate((np.random.normal(loc = -3, scale = 0.7, size = 10), np.random.normal(loc = 5, scale = 1.15, size = 10)))
-    test_gauss = KernelDensityEstimator(data_pts = bimodal_test_data)
+    test_gauss = KernelDensityEstimator(data_pts = bimodal_test_data, timing = True)
     
     # Plot the results
     eval_pts, relative_density, std_dev = test_gauss
