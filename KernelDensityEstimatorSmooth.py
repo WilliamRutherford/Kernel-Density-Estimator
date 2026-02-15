@@ -15,7 +15,6 @@ def smoothGaussEstimator(data_pts : npt.ArrayLike, divs : int = 100, bounds_fact
     pt_dist_avg = np.mean(pt_distances)
     # whatever that is, use it as as the standard deviation
     std_dev = pt_dist_avg * 0.75
-    fn = gaussian_fn(center = 0.0, std_dev = std_dev)
     result = KernelDensityEstimator(data_pts = data_pts, bandwidth = std_dev, divs = divs, bounds_factor = bounds_factor, bounds_abs = bounds_abs, input_pts = input_pts)
     return result
 
