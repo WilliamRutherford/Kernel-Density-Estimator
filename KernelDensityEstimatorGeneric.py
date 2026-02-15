@@ -4,18 +4,7 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-'''
-A single Gaussian Normal Distribution density function. 
-*Should* use numpy methods and return a function, so it can operate on a whole array of elements. 
-'''
-def gaussian_fn(center = 0.0, std_dev = 1.0):
-    return (lambda x : 1 / (std_dev * math.sqrt(2 * math.pi)) * np.exp((-1/2) * np.power((x - center) /std_dev, 2))) 
-
-
-'''
-A Kernel Density Estimator where no bandwidth is provided; we simply choose the bandwidth which is the most 'smooth'
-'''
-def smoothGaussEstimator(data_pts : npt.ArrayLike, divs : int = 100, bounds_factor : float = 0.25, bounds_abs = None, input_pts = None):
+def GenericGaussEstimator(data_pts : npt.ArrayLike, fn, divs : int = 100, bounds_factor : float = 0.25, bounds_abs = None, input_pts = None):
     
     if(input_pts is None):
         if(bounds_abs is None):
@@ -28,7 +17,6 @@ def smoothGaussEstimator(data_pts : npt.ArrayLike, divs : int = 100, bounds_fact
         eval_pts = np.linspace(lower_bnd, upper_bnd, divs)
     else:
         eval_pts = input_pts
-
 
     # calculation of average distance between consecutive points
     sorted_pts = np.sort(data_pts)
@@ -50,7 +38,7 @@ def smoothGaussEstimator(data_pts : npt.ArrayLike, divs : int = 100, bounds_fact
     
     dist_diff = data_stretched - eval_stretched
     # For each offset, replace with the probability from the gaussian pdf. 
-    norm_func = gaussian_fn(center = 0.0, std_dev = std_dev) 
+    norm_func = fn
     #vec_norm_func = np.vectorize(norm_func)
     # Generate the probability distribution for each offset
     ind_density = norm_func(dist_diff)
@@ -58,15 +46,15 @@ def smoothGaussEstimator(data_pts : npt.ArrayLike, divs : int = 100, bounds_fact
     tot_density = np.sum(ind_density, axis = 0)
     # Then, we make it relative to the whole area; giving us a probability density estimation (the area underneath is 1)
     relative_density = tot_density / np.sum(tot_density)
-    return eval_pts, relative_density, std_dev
+    return eval_pts, relative_density
 
 if(__name__ == "__main__"):
+    fn = (lambda x: (abs(x) <= 1) * 0.5)
     bimodal_test_data = np.concatenate((np.random.normal(loc = -3, scale = 0.7, size = 10), np.random.normal(loc = 5, scale = 1.15, size = 10)))
-    test_gauss = smoothGaussEstimator(data_pts = bimodal_test_data)
+    test_gauss = GenericGaussEstimator(data_pts = bimodal_test_data, fn = fn)
     
     # Plot the results
-    eval_pts, relative_density, std_dev = test_gauss
-    print("Standard deviation used: ", std_dev)
+    eval_pts, relative_density = test_gauss
     plt.plot(eval_pts, relative_density, label="Estimated Density")
     plt.title("Kernel Density Estimation")
     plt.xlabel("Data Points")
